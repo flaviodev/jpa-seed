@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.NoResultException;
@@ -52,27 +51,13 @@ public class ClienteTest extends BaseJPATest {
 		return cliente;
 	}
 	
-	private void salvaVenda(Cliente cliente) {
-		
-		getEntityManager().getTransaction().begin();
-		
-		Produto produto = new Produto("Teclado", "HP");
-		getEntityManager().persist(produto);
-		
-		Venda venda = new Venda();
-		venda.setCliente(cliente);
-		venda.getProdutos().add(produto);
-		venda.setDataHora(new Date());
-		getEntityManager().persist(venda);
-		
-		getEntityManager().getTransaction().commit();
-	}
-
 	@Test(expected = LazyInitializationException.class)
 	public void naoDeveAcessarAtributoLazyForaEscopoEntityManager() {
 
 		Cliente clienteInserido = salvaCliente();
-		salvaVenda(clienteInserido);
+		fecharEntityManager();
+		instanciarEntityManager();
+		
 		Cliente cliente = getEntityManager().find(Cliente.class, clienteInserido.getId());
 
 		assertNotNull("Verifica se encontrou um registro", cliente);
